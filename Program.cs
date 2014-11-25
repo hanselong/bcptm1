@@ -5,7 +5,16 @@ namespace ShoppingCartDemo
 {
     class Program
     {
-        private static const double TAX = 0.095;
+        private const double TAX = 0.095;
+
+        static List<Inventory> _inventoryList;
+
+        static Program()
+        {
+            // Set up the initial inventory to purchase
+            InventoryList defaultList = new InventoryList();
+            _inventoryList = defaultList.List;
+        }
 
         static void Main(string[] args)
         {
@@ -33,6 +42,8 @@ namespace ShoppingCartDemo
                 {
                     Console.WriteLine("You didn't enter a number between 1 and 4, try again.");
                 }
+                DisplayMainOptions();
+                userInput = GetPurchaseOption();
             }
 
             // Display items for purchasing
@@ -116,6 +127,7 @@ namespace ShoppingCartDemo
         static void DisplayPurchaseOptions()
         {
             Console.WriteLine("Please choose from the following menu:");
+            //TODO: Use the inventory list and place this in a loop
             Console.WriteLine("1. Apple $1.00");
             Console.WriteLine("2. Grapes $2.00");
             Console.WriteLine("3. Mango $3.00");
