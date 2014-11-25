@@ -3,24 +3,30 @@ using System.Collections.Generic;
 
 namespace ShoppingCartDemo
 {
+    // It works right now if you want to do undos stop when this appears.
+
+
     class Program
     {
         private const double TAX = 0.095;
+        private const int CHEAT = 0;
 
-        static List<Inventory> _inventoryList;
+        static List<Inventory> _inventoryList; 
+  
+         static Program() 
+         { 
+             // Set up the initial inventory to purchase 
+             InventoryList defaultList = new InventoryList(); 
+             _inventoryList = defaultList.List; 
+        } 
 
-        static Program()
-        {
-            // Set up the initial inventory to purchase
-            InventoryList defaultList = new InventoryList();
-            _inventoryList = defaultList.List;
-        }
 
         static void Main(string[] args)
         {
             int userInput = 0;
             int[] purchases = new int[4]; // apples, grapes, mangos, soda
             double[] costs = new double[] { 1, 2, 3, 0.5 };
+            Console.WriteLine("Welcome to the shopping cart demo.");
 
             DisplayMainOptions();
             userInput = GetPurchaseOption();
@@ -57,9 +63,9 @@ namespace ShoppingCartDemo
             }
 
             double tax = subtotal * TAX;
-            Console.WriteLine("Subtotal: ${0:f2}", subtotal);
-            Console.WriteLine("Tax (9.5%): ${0:f2}", tax);
-            Console.WriteLine("Total: ${0:f2}", subtotal + tax);
+            Console.WriteLine("Subtotal: ${0:f2}", subtotal + CHEAT);
+            Console.WriteLine("Tax (9.5%): ${0:f2}", tax + TAX * CHEAT);
+            Console.WriteLine("Total: ${0:f2}", subtotal + tax + CHEAT + TAX * CHEAT);
 
             Console.WriteLine("Press any key to end the program.");
             Console.ReadKey();
@@ -67,7 +73,34 @@ namespace ShoppingCartDemo
 
         private static void removePurchases(int[] purchases)
         {
-            throw new NotImplementedException();
+            int userInput = 0;
+            viewShoppingCart(purchases);
+            DisplayRemoveOptions();
+            userInput = GetPurchaseOption();
+
+            while (userInput != 5)
+            {
+                if (userInput < 1 || userInput > 5)
+                {
+                    Console.WriteLine("Please enter a number from 1 to 5.");
+                    DisplayRemoveOptions();
+                    userInput = GetPurchaseOption();
+                    continue;
+                }
+                if (purchases[userInput - 1] == 0)
+                {
+                    Console.WriteLine("You haven't purchased such product.");
+                }
+                else
+                {
+                    --purchases[userInput - 1];
+                    viewShoppingCart(purchases);
+                }
+                
+                // Display the summary of the transaction
+                DisplayRemoveOptions();
+                userInput = GetPurchaseOption();
+            }
         }
 
         private static void viewShoppingCart(int[] purchases)
@@ -104,8 +137,8 @@ namespace ShoppingCartDemo
                     userInput = GetPurchaseOption();
                     continue;
                 }
-                viewShoppingCart(purchases);
                 ++purchases[userInput - 1];
+                viewShoppingCart(purchases);
                 // Display the summary of the transaction
                 DisplayPurchaseOptions();
                 userInput = GetPurchaseOption();
@@ -126,14 +159,31 @@ namespace ShoppingCartDemo
         /// </summary>
         static void DisplayPurchaseOptions()
         {
-            Console.WriteLine("Please choose from the following menu:");
-            //TODO: Use the inventory list and place this in a loop
-            Console.WriteLine("1. Apple $1.00");
-            Console.WriteLine("2. Grapes $2.00");
-            Console.WriteLine("3. Mango $3.00");
-            Console.WriteLine("4. Soda $0.50");
+            int listSize = _inventoryList.Count;
+
+            for (int i = 0; i < listSize; i++) Console.WriteLine("{0}. {1}", i + 1, _inventoryList[i].DisplayName());
+
+            //Console.WriteLine("Please choose from the following menu:");
+            //Console.WriteLine("1. Apple $1.00");
+            //Console.WriteLine("2. Grapes $2.00");
+            //Console.WriteLine("3. Mango $3.00");
+            //Console.WriteLine("4. Soda $0.50");
             Console.WriteLine("5. Stop purchasing");
             Console.WriteLine("Which one would you like to purchase?");
+        }
+
+        /// <summary>
+        /// Display remove options for user
+        /// </summary>
+        static void DisplayRemoveOptions()
+        {
+            Console.WriteLine("Please choose from the following menu:");
+            Console.WriteLine("1. Apple");
+            Console.WriteLine("2. Grapes");
+            Console.WriteLine("3. Mango");
+            Console.WriteLine("4. Soda");
+            Console.WriteLine("5. Stop removing");
+            Console.WriteLine("Which one would you like to remove?");
         }
 
         /// <summary>
@@ -149,7 +199,7 @@ namespace ShoppingCartDemo
             }
             catch
             {
-                Console.WriteLine("Please enter a whole number!");
+                // Console.WriteLine("Please enter a whole number!");
             }
             return userInput;
         }
